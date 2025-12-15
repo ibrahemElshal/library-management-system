@@ -1,0 +1,35 @@
+{
+  "name": "library-mangment-system",
+  "version": "1.0.0",
+  "description": "library mangment system ",
+  "homepage": "https://github.com/ibrahemElshal/library-management-system#readme",
+  "bugs": {
+    "url": "https://github.com/ibrahemElshal/library-management-system/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ibrahemElshal/library-management-system.git"
+  },
+  "license": "ISC",
+  "author": "ibrahimElshall",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "dependencies": {
+    "basic-auth": "^2.0.1",
+    "body-parser": "^2.2.1",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.2.1",
+    "mysql2": "^3.15.3",
+    "rate-limit-redis": "^4.3.1",
+    "redis": "^5.10.0",
+    "sequelize": "^6.37.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
