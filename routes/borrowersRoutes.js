@@ -1,14 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const borrowerController = require('../controllers/borrowersController');
-const authenticate = require('../middlewares/authMiddleware');
+const adminAuth = require('../middlewares/adminAuth');
+const borrowerAuth=require('../middlewares/borrowerAuth')
 const { borrowerCreateValidation, borrowerUpdateValidation } = require('../validators/borrowerValidator');
+const borrowerController = require('../controllers/borrowersController');
 
-router.use(authenticate);
+router.post('/register', borrowerController.register);
 
-router.post('/', borrowerCreateValidation, borrowerController.addBorrower);
+router.post('/login', borrowerController.login);
+
+
+// router.post('/', borrowerCreateValidation, borrowerController.addBorrower);
 router.put('/:id', borrowerUpdateValidation, borrowerController.updateBorrower);
-router.delete('/:id', borrowerController.deleteBorrower);
-router.get('/', borrowerController.getAllBorrowers);
+router.delete('/:id',adminAuth ,borrowerController.deleteBorrower);
+router.get('/', adminAuth,borrowerController.getAllBorrowers);
 
 module.exports = router;

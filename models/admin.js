@@ -1,31 +1,29 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database.js');
+const sequelize = require('../config/database');
 
-const Borrower = sequelize.define('Borrower', {
+const Admin = sequelize.define('Admin', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
-    name: {
+    username: {
         type: DataTypes.STRING,
+        unique: true,
         allowNull: false
     },
     email: {
         type: DataTypes.STRING,
         unique: true,
         allowNull: false
-    }, password: {  
+    },
+    password: {      // hashed password
         type: DataTypes.STRING,
         allowNull: false
-    },
-    registered_date: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
     }
 }, {
-    tableName: 'borrowers',
+    tableName: 'admins',
     timestamps: true
 });
 
-module.exports = Borrower;
+module.exports = Admin;

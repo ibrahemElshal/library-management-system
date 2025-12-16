@@ -1,24 +1,76 @@
 const Borrower = require('../models/borrower');
 const { sanitizeString } = require('../helpers/sanitize');
 const { validationResult } = require('express-validator');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
-exports.addBorrower = async (req, res) => {
+// exports.addBorrower = async (req, res) => {
+//     try {
+//         const errors = validationResult(req);
+//         if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
+//         const { name, email } = req.body;
+
+//         const borrower = await Borrower.create({
+//             name: sanitizeString(name),
+//             email: sanitizeString(email)
+//         });
+
+//         res.status(201).json(borrower);
+
+//     } catch (err) {
+//         console.log(err);
+//         res.status(400).json({ message: err.message });
+//     }
+// };
+exports.register = async (req, res) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
-        const { name, email } = req.body;
+        const { name, email, password } = req.body;
+
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         const borrower = await Borrower.create({
             name: sanitizeString(name),
-            email: sanitizeString(email)
+            email: sanitizeString(email),
+            password: hashedPassword
         });
 
-        res.status(201).json(borrower);
-
+        res.status(201).json({
+            message: 'Borrower registered successfully',
+            borrower: {
+                id: borrower.id,
+                name: borrower.name,
+                email: borrower.email
+            }
+        });
     } catch (err) {
-        console.log(err);
-        res.status(400).json({ message: err.message });
+        console.error(err);
+        res.status(500).json({ message: err.message });
+    }
+};
+exports.login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        const borrower = await Borrower.findOne({ where: { email } });
+        if (!borrower) return res.status(401).json({ message: 'Invalid credentials' });
+
+        const match = await bcrypt.compare(password, borrower.password);
+        if (!match) return res.status(401).json({ message: 'Invalid credentials' });
+
+        const token = jwt.sign(
+            { id: borrower.id, email: borrower.email },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+
+        res.status(200).json({ token });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: err.message });
     }
 };
 
