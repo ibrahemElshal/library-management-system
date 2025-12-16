@@ -1,7 +1,20 @@
 const request = require('supertest');
-const app = require('../app');
 const sequelize = require('../config/database');
 const Book = require('../models/book');
+
+jest.mock('../middlewares/adminAuth', () => {
+  return (req, res, next) => {
+    // Mock admin data for testing
+    req.admin = { id: 1, username: 'testadmin' };
+    next();
+  };
+});
+
+jest.mock('../middlewares/rateLimiter', () => {
+  return () => (req, res, next) => next();
+});
+
+const app = require('../app');
 
 beforeAll(async () => {
   await sequelize.sync({ force: true });
@@ -36,7 +49,8 @@ describe('Books API', () => {
   test('GET /api/books - should return all books', async () => {
     const res = await request(app).get('/api/books');
     expect(res.statusCode).toBe(200);
-    expect(res.body.length).toBeGreaterThan(0);
+    expect(res.body).toHaveProperty('books');
+    expect(res.body.books.length).toBeGreaterThan(0);
   });
 
   test('PUT /api/books/:id - should update a book', async () => {
