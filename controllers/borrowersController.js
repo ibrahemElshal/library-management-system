@@ -57,11 +57,27 @@ exports.deleteBorrower = async (req, res) => {
         res.status(400).json({ message: err.message });
     }
 };
-
 exports.getAllBorrowers = async (req, res) => {
     try {
-        const borrowers = await Borrower.findAll();
-        res.json(borrowers);
+        let { page, limit } = req.query;
+
+        page = page ? parseInt(page) : 1;      // Default page = 1
+        limit = limit ? parseInt(limit) : 10;   // Default limit = 10
+        const offset = (page - 1) * limit;
+
+        const { count, rows } = await Borrower.findAndCountAll({
+            limit,
+            offset,
+            order: [['createdAt', 'DESC']]
+        });
+
+        res.status(200).json({
+            totalItems: count,
+            totalPages: Math.ceil(count / limit),
+            currentPage: page,
+            borrowers: rows
+        });
+
     } catch (err) {
         console.log(err);
         res.status(500).json({ message: err.message });

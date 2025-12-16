@@ -67,13 +67,31 @@ exports.deleteBook = async (req, res) => {
 
 exports.getAllBooks = async (req, res) => {
     try {
-        const books = await Book.findAll();
-        res.json(books);
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ message: err.message });
+      let { page, limit } = req.query;
+  
+      page = page ? parseInt(page) : 1;      // Default page = 1
+      limit = limit ? parseInt(limit) : 10;   // Default limit = 10
+      const offset = (page - 1) * limit;
+  
+      const { count, rows } = await Book.findAndCountAll({
+        limit,
+        offset,
+        order: [['createdAt', 'DESC']]
+      });
+  
+      return res.status(200).json({
+        totalItems: count,
+        totalPages: Math.ceil(count / limit),
+        currentPage: page,
+        books: rows
+      });
+  
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Server error' });
     }
-};
+  };
+  
 
 exports.searchBooks = async (req, res) => {
     try {
