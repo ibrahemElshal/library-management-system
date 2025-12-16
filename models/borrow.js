@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database.js');
+const sequelize = require('../config/db');
 const Book = require('./book.js');
-const Borrower = require('./borrower.js');
+const Borrower = require('.borrower.js');
 
 const Borrow = sequelize.define('Borrow', {
     id: {
