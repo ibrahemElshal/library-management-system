@@ -5,13 +5,8 @@ const { Op } = require('sequelize');
 const { Parser } = require('json2csv');
 const ExcelJS = require('exceljs');
 
-/**
- * ===============================
- * Helpers (Security First)
- * ===============================
- */
 
-// Prevent CSV Injection
+
 const sanitizeCSVValue = (value) => {
     if (typeof value === 'string' && /^[=+\-@]/.test(value)) {
         return `'${value}`;
@@ -19,7 +14,6 @@ const sanitizeCSVValue = (value) => {
     return value;
 };
 
-// Validate and parse date safely
 const parseDate = (value) => {
     const date = new Date(value);
     if (isNaN(date.getTime())) {
@@ -28,7 +22,6 @@ const parseDate = (value) => {
     return date;
 };
 
-// Build safe response object
 const mapBorrow = (b) => ({
     borrow_id: b.id,
     borrower_name: sanitizeCSVValue(b.Borrower.name),
@@ -42,59 +35,135 @@ const mapBorrow = (b) => ({
 
 
 
-/**
- * ===============================
- * Export borrows in date range (CSV)
- * ===============================
- */
+
+// exports.exportBorrowDataCSV = async (req, res) => {
+//     try {
+//         const { startDate, endDate } = req.query;
+
+//         if (!startDate || !endDate) {
+//             return res.status(400).json({ message: 'startDate and endDate are required' });
+//         }
+
+//         const start = parseDate(startDate);
+//         const end = parseDate(endDate);
+
+//         if (start > end) {
+//             return res.status(400).json({ message: 'startDate must be before endDate' });
+//         }
+
+//         const borrows = await Borrow.findAll({
+//             where: {
+//                 borrow_date: { [Op.between]: [start, end] }
+//             },
+//             include: [Book, Borrower]
+//         });
+
+//         const data = borrows.map(mapBorrow);
+
+//         const parser = new Parser();
+//         const csv = parser.parse(data);
+
+//         res.setHeader('Content-Type', 'text/csv');
+//         res.setHeader(
+//             'Content-Disposition',
+//             `attachment; filename=borrows_${startDate}_${endDate}.csv`
+//         );
+
+//         return res.status(200).send(csv);
+
+//     } catch (error) {
+//         console.log(error);
+//         return res.status(400).json({ message: error.message });
+//     }
+// };
+
 exports.exportBorrowDataCSV = async (req, res) => {
     try {
         const { startDate, endDate } = req.query;
 
-        // ✅ Input validation
         if (!startDate || !endDate) {
-            return res.status(400).json({ message: 'startDate and endDate are required' });
+            return res.status(400).json({
+                message: 'startDate and endDate are required'
+            });
         }
 
-        const start = parseDate(startDate);
-        const end = parseDate(endDate);
+        const start = new Date(startDate);
+        const end = new Date(endDate);
 
         if (start > end) {
-            return res.status(400).json({ message: 'startDate must be before endDate' });
+            return res.status(400).json({
+                message: 'startDate must be before endDate'
+            });
         }
 
-        const borrows = await Borrow.findAll({
+        // 2️⃣ Analytics Query
+        const analytics = await Borrow.findAll({
             where: {
-                borrow_date: { [Op.between]: [start, end] }
+                borrow_date: {
+                    [Op.between]: [start, end]
+                },
+                return_date: {
+                    [Op.ne]: null
+                }
             },
-            include: [Book, Borrower]
+            attributes: [
+                'book_id',
+                [fn('COUNT', col('Borrow.id')), 'total_borrows'],
+                [
+                    fn(
+                        'AVG',
+                        literal('DATEDIFF(return_date, borrow_date)')
+                    ),
+                    'avg_borrow_days'
+                ]
+            ],
+            include: [
+                {
+                    model: Book,
+                    attributes: ['title', 'isbn']
+                }
+            ],
+            group: ['book_id', 'Book.id'],
+            order: [[fn('COUNT', col('Borrow.id')), 'DESC']]
         });
 
-        const data = borrows.map(mapBorrow);
+        const data = analytics.map(row => ({
+            book_title: row.Book.title,
+            isbn: row.Book.isbn,
+            total_borrows: row.get('total_borrows'),
+            average_borrow_days: Number(
+                parseFloat(row.get('avg_borrow_days')).toFixed(2)
+            )
+        }));
 
-        const parser = new Parser();
+        // 4️⃣ Convert to CSV
+        const parser = new Parser({
+            fields: [
+                'book_title',
+                'isbn',
+                'total_borrows',
+                'average_borrow_days'
+            ]
+        });
+
         const csv = parser.parse(data);
 
         res.setHeader('Content-Type', 'text/csv');
         res.setHeader(
             'Content-Disposition',
-            `attachment; filename=borrows_${startDate}_${endDate}.csv`
+            `attachment; filename=borrow_analytics_${startDate}_${endDate}.csv`
         );
 
         return res.status(200).send(csv);
 
     } catch (error) {
-        return res.status(400).json({ message: error.message });
+        console.error(error);
+        return res.status(500).json({
+            message: 'Failed to generate borrow analytics report'
+        });
     }
 };
 
-
-
-/**
- * ===============================
- * Export borrows in date range (XLSX)
- * ===============================
- */
 exports.exportBorrowDataXLSX = async (req, res) => {
     try {
         const { startDate, endDate } = req.query;
@@ -146,17 +215,14 @@ exports.exportBorrowDataXLSX = async (req, res) => {
         res.end();
 
     } catch (error) {
+        console.log(error);
         return res.status(400).json({ message: error.message });
     }
 };
 
 
 
-/**
- * ===============================
- * Export overdue borrows (last month)
- * ===============================
- */
+
 exports.exportOverdueLastMonth = async (req, res) => {
     try {
         const now = new Date();
@@ -183,17 +249,13 @@ exports.exportOverdueLastMonth = async (req, res) => {
         return res.status(200).send(csv);
 
     } catch (error) {
+        console.log(error);
         return res.status(500).json({ message: 'Failed to export overdue borrows' });
     }
 };
 
 
 
-/**
- * ===============================
- * Export all borrows (last month)
- * ===============================
- */
 exports.exportBorrowsLastMonth = async (req, res) => {
     try {
         const now = new Date();
@@ -219,6 +281,7 @@ exports.exportBorrowsLastMonth = async (req, res) => {
         return res.status(200).send(csv);
 
     } catch (error) {
+        console.log(error);
         return res.status(500).json({ message: 'Failed to export borrows' });
     }
 };

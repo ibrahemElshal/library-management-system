@@ -6,7 +6,7 @@ const rateLimiter = require('../middlewares/rateLimiter');
 const { bookCreateValidation, bookUpdateValidation, bookSearchValidation } = require('../validators/bookValidator');
 
 
-router.use('/',authenticate);
+//router.use('/',authenticate);
 
 router.post('/', rateLimiter('addBook', 5, 60), bookCreateValidation, bookController.addBook);
 router.put('/:id', bookUpdateValidation, bookController.updateBook);
