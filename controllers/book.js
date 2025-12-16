@@ -47,6 +47,7 @@ exports.updateBook = async (req, res) => {
 
         res.json(book);
     } catch (err) {
+        console.log(err);
         res.status(400).json({ message: err.message });
     }
 };
@@ -59,6 +60,7 @@ exports.deleteBook = async (req, res) => {
         await book.destroy();
         res.json({ message: 'Book deleted successfully' });
     } catch (err) {
+        console.log(err);
         res.status(400).json({ message: err.message });
     }
 };
@@ -68,6 +70,7 @@ exports.getAllBooks = async (req, res) => {
         const books = await Book.findAll();
         res.json(books);
     } catch (err) {
+        console.log(err);
         res.status(500).json({ message: err.message });
     }
 };

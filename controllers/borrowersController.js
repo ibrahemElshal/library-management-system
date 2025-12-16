@@ -17,6 +17,7 @@ exports.addBorrower = async (req, res) => {
         res.status(201).json(borrower);
 
     } catch (err) {
+        console.log(err);
         res.status(400).json({ message: err.message });
     }
 };
@@ -39,6 +40,7 @@ exports.updateBorrower = async (req, res) => {
         res.json(borrower);
 
     } catch (err) {
+        console.log(err);
         res.status(400).json({ message: err.message });
     }
 };
@@ -51,6 +53,7 @@ exports.deleteBorrower = async (req, res) => {
         await borrower.destroy();
         res.json({ message: 'Borrower deleted successfully' });
     } catch (err) {
+        console.log(err);
         res.status(400).json({ message: err.message });
     }
 };
@@ -60,6 +63,7 @@ exports.getAllBorrowers = async (req, res) => {
         const borrowers = await Borrower.findAll();
         res.json(borrowers);
     } catch (err) {
+        console.log(err);
         res.status(500).json({ message: err.message });
     }
 };

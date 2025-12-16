@@ -3,32 +3,69 @@ const Book = require('../models/book');
 const { sanitizeString } = require('../helpers/sanitize');
 const { validationResult } = require('express-validator');
 
-exports.checkoutBook = async (req, res) => {
+// exports.checkoutBook = async (req, res) => {
+//     try {
+//         const errors = validationResult(req);
+//         if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
+//         const { book_id, borrower_id, due_date } = req.body;
+
+//         const book = await Book.findByPk(book_id);
+//         if (!book) return res.status(404).json({ message: 'Book not found' });
+//         if (book.quantity < 1) return res.status(400).json({ message: 'Book not available' });
+
+//         const borrow = await Borrow.create({
+//             book_id,
+//             borrower_id,
+//             due_date: new Date(due_date)
+//         });
+
+//         await book.decrement('quantity', { by: 1 });
+
+//         res.status(201).json(borrow);
+
+//     } catch (err) {
+//         console.log(err);
+//         res.status(400).json({ message: err.message });
+//     }
+// };
+exports.returnBook = async (req, res) => {
+    const transaction = await sequelize.transaction();
+  
     try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-
-        const { book_id, borrower_id, due_date } = req.body;
-
-        const book = await Book.findByPk(book_id);
-        if (!book) return res.status(404).json({ message: 'Book not found' });
-        if (book.quantity < 1) return res.status(400).json({ message: 'Book not available' });
-
-        const borrow = await Borrow.create({
-            book_id,
-            borrower_id,
-            due_date: new Date(due_date)
-        });
-
-        await book.decrement('quantity', { by: 1 });
-
-        res.status(201).json(borrow);
-
+      const borrow = await Borrow.findByPk(req.params.id, { transaction });
+  
+      if (!borrow) {
+        await transaction.rollback();
+        return res.status(404).json({ message: 'Borrow record not found' });
+      }
+  
+      if (borrow.return_date) {
+        await transaction.rollback();
+        return res.status(400).json({ message: 'Book already returned' });
+      }
+  
+      borrow.return_date = new Date();
+      await borrow.save({ transaction });
+  
+      const book = await Book.findByPk(borrow.book_id, {
+        transaction,
+        lock: transaction.LOCK.UPDATE
+      });
+  
+      await book.increment('quantity', { by: 1, transaction });
+  
+      await transaction.commit();
+  
+      res.json(borrow);
+  
     } catch (err) {
-        console.log(err);
-        res.status(400).json({ message: err.message });
+      await transaction.rollback();
+      console.error(err);
+      res.status(500).json({ message: 'Return failed' });
     }
-};
+  };
+  
 
 exports.returnBook = async (req, res) => {
     try {
@@ -70,7 +107,7 @@ exports.getBorrowedBooks = async (req, res) => {
     const borrows = await Borrow.findAll({
       where: {
         borrower_id: borrowerId,
-        return_date: null // only books not returned yet
+        return_date: null 
       },
       include: [
         {
