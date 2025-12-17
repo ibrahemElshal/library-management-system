@@ -49,12 +49,15 @@ A comprehensive RESTful API for managing library operations including books, bor
 
 ## 📦 Prerequisites
 
-Before you begin, ensure you have the following installed:
-
+### For Local Development
 - **Node.js** (v14 or higher)
 - **MySQL** (v5.7 or higher)
 - **Redis** (for rate limiting)
 - **npm** or **yarn**
+
+### For Docker (Recommended)
+- **Docker** (v20.10 or higher)
+- **Docker Compose** (v2.0 or higher)
 
 ## 🚀 Installation
 
@@ -98,10 +101,92 @@ Before you begin, ensure you have the following installed:
 
    The server will start on `http://localhost:5000` (or the port specified in your `.env` file).
 
+## 🐳 Docker Installation (Recommended)
+
+The easiest way to run the application is using Docker Compose, which sets up the application, MySQL, and Redis automatically.
+
+### Prerequisites for Docker
+- **Docker** (v20.10 or higher)
+- **Docker Compose** (v2.0 or higher)
+
+### Quick Start with Docker
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/ibrahemElshal/library-management-system.git
+   cd library-management-system
+   ```
+
+2. **Build and start all services**
+   ```bash
+   docker-compose up -d
+   ```
+
+   This will:
+   - Build the Node.js application image
+   - Start MySQL database container
+   - Start Redis container
+   - Start the application container
+   - Automatically create the database and run migrations
+
+3. **View logs**
+   ```bash
+   docker-compose logs -f app
+   ```
+
+4. **Stop all services**
+   ```bash
+   docker-compose down
+   ```
+
+5. **Stop and remove volumes (clean slate)**
+   ```bash
+   docker-compose down -v
+   ```
+
+### Docker Commands
+
+- **Start services**: `docker-compose up -d`
+- **Stop services**: `docker-compose stop`
+- **View logs**: `docker-compose logs -f`
+- **Restart a service**: `docker-compose restart app`
+- **Rebuild after code changes**: `docker-compose up -d --build`
+- **Access MySQL**: `docker-compose exec mysql mysql -u library_user -p library_db`
+- **Access Redis CLI**: `docker-compose exec redis redis-cli`
+
+### Environment Variables for Docker
+
+The `docker-compose.yml` file includes default environment variables. To customize them, you can:
+
+1. **Edit docker-compose.yml** directly, or
+2. **Create a `.env` file** in the project root (Docker Compose will automatically use it)
+
+Example `.env` file:
+```env
+DB_NAME=library_db
+DB_USER=library_user
+DB_PASSWORD=library_password
+DB_HOST=mysql
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+PORT=5000
+REDIS_HOST=redis
+REDIS_PORT=6379
+```
+
+### Docker Services
+
+- **app**: Node.js application (port 5000)
+- **mysql**: MySQL 8.0 database (port 3306)
+- **redis**: Redis cache (port 6379)
+
+All services are connected via a Docker network and can communicate using service names as hostnames.
+
 ## ⚙️ Configuration
 
 ### Database Configuration
 The database connection is configured in `config/database.js`. Update the connection parameters in your `.env` file.
+
+**Important**: When using Docker, set `DB_HOST=mysql` (the service name). For local development, use `DB_HOST=localhost`.
 
 ### Redis Configuration
 Redis is used for rate limiting. Configure it in `config/redis.js` or via environment variables.
@@ -114,18 +199,22 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
 ## 📚 API Documentation
 
-### Base URL
+For complete API documentation with detailed request/response examples, see [API_DOCUMENTATION.md](./API_DOCUMENTATION.md).
+
+### Quick Reference
+
+**Base URL:**
 ```
 http://localhost:5000/api
 ```
 
-### Authentication
+**Authentication:**
 Most endpoints require authentication. Include the JWT token in the Authorization header:
 ```
 Authorization: Bearer <your_token>
 ```
 
-### API Endpoints
+### API Endpoints Summary
 
 #### Admin Endpoints
 - `POST /api/admin/add` - Create a new admin
@@ -318,7 +407,9 @@ If you encounter any issues or have suggestions, please open an issue on the [Gi
 
 ## 📄 Additional Documentation
 
-- API Documentation: See `Apis endPoints.docx`
+- **Complete API Documentation**: See [API_DOCUMENTATION.md](./API_DOCUMENTATION.md) - Comprehensive API docs with request/response examples
+- **Postman Collection**: See `Library_Management_System.postman_collection.json` - Import into Postman for easy testing
+- API Endpoints (Legacy): See `Apis endPoints.docx`
 - Database Setup: See `Library Db Setup.docx`
 - System Workflow: See `Library Management System Workflow Doc.docx`
 - System Diagram: See `library mangment system diagram.pdf`

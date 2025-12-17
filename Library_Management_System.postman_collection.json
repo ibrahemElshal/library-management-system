@@ -579,7 +579,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/api/analytics/export/csv?startDate=2024-01-01&endDate=2024-12-31",
+							"raw": "{{baseUrl}}/api/analytics/export/csv?startDate=2024-01-01T00:00:00.000Z&endDate=2024-12-31T23:59:59.999Z",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -592,12 +592,12 @@
 							"query": [
 								{
 									"key": "startDate",
-									"value": "2024-01-01",
+									"value": "2024-01-01T00:00:00.000Z",
 									"description": "Start date (ISO 8601 format)"
 								},
 								{
 									"key": "endDate",
-									"value": "2024-12-31",
+									"value": "2024-12-31T23:59:59.999Z",
 									"description": "End date (ISO 8601 format)"
 								}
 							]
@@ -617,7 +617,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/api/analytics/export/xlsx?startDate=2024-01-01&endDate=2024-12-31",
+							"raw": "{{baseUrl}}/api/analytics/export/xlsx?startDate=2024-01-01T00:00:00.000Z&endDate=2024-12-31T23:59:59.999Z",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -630,12 +630,12 @@
 							"query": [
 								{
 									"key": "startDate",
-									"value": "2024-01-01",
+									"value": "2024-01-01T00:00:00.000Z",
 									"description": "Start date (ISO 8601 format)"
 								},
 								{
 									"key": "endDate",
-									"value": "2024-12-31",
+									"value": "2024-12-31T23:59:59.999Z",
 									"description": "End date (ISO 8601 format)"
 								}
 							]

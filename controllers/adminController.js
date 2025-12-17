@@ -2,7 +2,6 @@ const Admin = require('../models/admin');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-// Add new admin
 exports.addAdmin = async (req, res) => {
     try {
         const { username, email, password } = req.body;
@@ -29,7 +28,6 @@ exports.addAdmin = async (req, res) => {
     }
 };
 
-// Admin login
 exports.login = async (req, res) => {
     try {
         const { username, password } = req.body;
