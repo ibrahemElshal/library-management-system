@@ -79,7 +79,7 @@ A comprehensive RESTful API for managing library operations including books, bor
    DB_USER=your_mysql_username
    DB_PASSWORD=your_mysql_password
    JWT_SECRET=your_jwt_secret_key
-   PORT=5000
+   PORT=5001
    REDIS_HOST=localhost
    REDIS_PORT=6379
    ```
@@ -99,7 +99,7 @@ A comprehensive RESTful API for managing library operations including books, bor
    npm start
    ```
 
-   The server will start on `http://localhost:5000` (or the port specified in your `.env` file).
+   The server will start on `http://localhost:5001` (or the port specified in your `.env` file).
 
 ## 🐳 Docker Installation (Recommended)
 
@@ -168,14 +168,14 @@ DB_USER=library_user
 DB_PASSWORD=library_password
 DB_HOST=mysql
 JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
-PORT=5000
+PORT=5001
 REDIS_HOST=redis
 REDIS_PORT=6379
 ```
 
 ### Docker Services
 
-- **app**: Node.js application (port 5000)
+- **app**: Node.js application (port 5001)
 - **mysql**: MySQL 8.0 database (port 3306)
 - **redis**: Redis cache (port 6379)
 
@@ -205,7 +205,7 @@ For complete API documentation with detailed request/response examples, see [API
 
 **Base URL:**
 ```
-http://localhost:5000/api
+http://localhost:5001/api
 ```
 
 **Authentication:**
@@ -311,7 +311,7 @@ npm test
 
 ### 1. Create an Admin
 ```bash
-curl -X POST http://localhost:5000/api/admin/add \
+curl -X POST http://localhost:5001/api/admin/add \
   -H "Content-Type: application/json" \
   -d '{
     "username": "admin1",
@@ -322,7 +322,7 @@ curl -X POST http://localhost:5000/api/admin/add \
 
 ### 2. Admin Login
 ```bash
-curl -X POST http://localhost:5000/api/admin/login \
+curl -X POST http://localhost:5001/api/admin/login \
   -H "Content-Type: application/json" \
   -d '{
     "username": "admin1",
@@ -332,7 +332,7 @@ curl -X POST http://localhost:5000/api/admin/login \
 
 ### 3. Create a Book
 ```bash
-curl -X POST http://localhost:5000/api/books \
+curl -X POST http://localhost:5001/api/books \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <admin_token>" \
   -d '{
@@ -346,7 +346,7 @@ curl -X POST http://localhost:5000/api/books \
 
 ### 4. Register a Borrower
 ```bash
-curl -X POST http://localhost:5000/api/borrowers/register \
+curl -X POST http://localhost:5001/api/borrowers/register \
   -H "Content-Type: application/json" \
   -d '{
     "name": "John Doe",
@@ -357,7 +357,7 @@ curl -X POST http://localhost:5000/api/borrowers/register \
 
 ### 5. Checkout a Book
 ```bash
-curl -X POST http://localhost:5000/api/borrows/checkout \
+curl -X POST http://localhost:5001/api/borrows/checkout \
   -H "Content-Type: application/json" \
   -d '{
     "book_id": 1,
@@ -368,7 +368,7 @@ curl -X POST http://localhost:5000/api/borrows/checkout \
 
 ### 6. Get All Books with Pagination
 ```bash
-curl "http://localhost:5000/api/books?page=1&limit=10"
+curl "http://localhost:5001/api/books?page=1&limit=10"
 ```
 
 ## 🔒 Security Features

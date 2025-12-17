@@ -18,5 +18,11 @@ exports.bookUpdateValidation = [
 ];
 
 exports.bookSearchValidation = [
-    query('query').notEmpty().withMessage('Search query is required')
+    query('query')
+        .trim()
+        .notEmpty().withMessage('Search query is required')
+        .isString().withMessage('Search query must be a string')
+        .isLength({ min: 2, max: 100 })
+        .withMessage('Search query must be between 2 and 100 characters')
 ];
+

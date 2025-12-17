@@ -8,7 +8,7 @@ const { checkoutValidation, returnValidation, borrowerIdValidation } = require('
 
 //router.use(authenticate);
 
-router.post('/checkout', rateLimiter('checkoutBook', 5, 60), checkoutValidation, borrowController.checkoutBook);
+router.post('/checkout', borrowerAuth,rateLimiter('checkoutBook', 5, 60), checkoutValidation, borrowController.checkoutBook);
 router.put('/return/:id', borrowerAuth,returnValidation, borrowController.returnBook);
 router.get('/borrowed/:borrower_id', adminAuth,borrowerIdValidation, borrowController.getBorrowedBooks);
 router.get('/overdue', adminAuth,borrowController.getOverdueBooks);

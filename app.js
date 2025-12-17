@@ -1,6 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+require('dotenv').config();
 
+const { initRedis } = require('./config/redis');
 const bookRoutes = require('./routes/booksRoutes');
 const borrowerRoutes = require('./routes/borrowersRoutes');
 const borrowRoutes = require('./routes/borrowRoutes');
@@ -10,6 +12,8 @@ const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 app.use(bodyParser.json());
+initRedis();
+
 
 app.use('/api/admin', adminRoutes); 
 app.use('/api/books', bookRoutes);

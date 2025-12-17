@@ -7,9 +7,9 @@ exports.checkoutBook = async (req, res) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
-
-        const { book_id, borrower_id, due_date } = req.body;
-
+        
+        const { borrower_id, due_date } = req.body;
+        const book_id= req.borrower.id 
         const book = await Book.findByPk(book_id);
         if (!book) return res.status(404).json({ message: 'Book not found' });
         if (book.quantity < 1) return res.status(400).json({ message: 'Book not available' });
