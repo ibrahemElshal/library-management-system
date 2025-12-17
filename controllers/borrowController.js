@@ -1,5 +1,6 @@
 const Borrow = require('../models/borrow');
 const Book = require('../models/book');
+const sequelize=require('../config/database');
 const { sanitizeString } = require('../helpers/sanitize');
 const { validationResult } = require('express-validator');
 

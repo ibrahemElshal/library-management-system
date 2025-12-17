@@ -1,7 +1,7 @@
 const Borrow = require('../models/borrow');
 const Book = require('../models/book');
 const Borrower = require('../models/borrower');
-const { Op } = require('sequelize');
+const { Op, fn, col, literal } = require('sequelize');
 const { Parser } = require('json2csv');
 const ExcelJS = require('exceljs');
 
@@ -96,7 +96,6 @@ exports.exportBorrowDataCSV = async (req, res) => {
             });
         }
 
-        // 2️⃣ Analytics Query
         const analytics = await Borrow.findAll({
             where: {
                 borrow_date: {
@@ -236,8 +235,28 @@ exports.exportOverdueLastMonth = async (req, res) => {
             include: [Book, Borrower]
         });
 
-        const parser = new Parser();
-        const csv = parser.parse(borrows.map(mapBorrow));
+        if (!borrows || borrows.length === 0) {
+            return res.status(404).json({
+                message: 'No overdue borrows found for last month'
+            });
+        }
+
+        const data = borrows.map(mapBorrow);
+
+        const parser = new Parser({
+            fields: [
+                'borrow_id',
+                'borrower_name',
+                'borrower_email',
+                'book_title',
+                'book_isbn',
+                'borrow_date',
+                'due_date',
+                'return_date'
+            ]
+        });
+
+        const csv = parser.parse(data);
 
         res.setHeader('Content-Type', 'text/csv');
         res.setHeader(
@@ -248,11 +267,12 @@ exports.exportOverdueLastMonth = async (req, res) => {
         return res.status(200).send(csv);
 
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: 'Failed to export overdue borrows' });
+        console.error(error);
+        return res.status(500).json({
+            message: 'Failed to export overdue borrows'
+        });
     }
 };
-
 
 
 exports.exportBorrowsLastMonth = async (req, res) => {
@@ -268,8 +288,28 @@ exports.exportBorrowsLastMonth = async (req, res) => {
             include: [Book, Borrower]
         });
 
-        const parser = new Parser();
-        const csv = parser.parse(borrows.map(mapBorrow));
+        if (!borrows || borrows.length === 0) {
+            return res.status(404).json({
+                message: 'No borrows found for last month'
+            });
+        }
+
+        const data = borrows.map(mapBorrow);
+
+        const parser = new Parser({
+            fields: [
+                'borrow_id',
+                'borrower_name',
+                'borrower_email',
+                'book_title',
+                'book_isbn',
+                'borrow_date',
+                'due_date',
+                'return_date'
+            ]
+        });
+
+        const csv = parser.parse(data);
 
         res.setHeader('Content-Type', 'text/csv');
         res.setHeader(
@@ -280,7 +320,9 @@ exports.exportBorrowsLastMonth = async (req, res) => {
         return res.status(200).send(csv);
 
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: 'Failed to export borrows' });
+        console.error(error);
+        return res.status(500).json({
+            message: 'Failed to export borrows'
+        });
     }
 };

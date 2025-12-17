@@ -1,8 +1,8 @@
-const dotenv=require('dotenv').config();
+const dotenv = require('dotenv').config();
 const app = require('./app');
 const sequelize = require('./config/database.js');
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 console.log('hello')
 sequelize.sync({ alter: true }).then(() => {
     console.log('Database synced');
