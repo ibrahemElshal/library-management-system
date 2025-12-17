@@ -1,51 +1,37 @@
-const Admin = require('../models/admin');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const AdminService = require('../services/adminService');
 
+/**
+ * Create a new admin.
+ */
 exports.addAdmin = async (req, res) => {
-    try {
-        const { username, email, password } = req.body;
+  try {
+    const admin = await AdminService.createAdmin(req.body);
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+    res.status(201).json({
+      message: 'Admin created successfully',
+      admin
+    });
 
-        const admin = await Admin.create({
-            username,
-            email,
-            password: hashedPassword
-        });
-
-        res.status(201).json({
-            message: 'Admin created successfully',
-            admin: {
-                id: admin.id,
-                username: admin.username,
-                email: admin.email
-            }
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: err.message });
-    }
+  } catch (err) {
+    console.error(err);
+    res.status(err.status || 500).json({
+      message: err.message || 'Failed to create admin'
+    });
+  }
 };
 
+/**
+ * Admin login.
+ */
 exports.login = async (req, res) => {
-    try {
-        const { username, password } = req.body;
-        const admin = await Admin.findOne({ where: { username } });
-        if (!admin) return res.status(401).json({ message: 'Invalid credentials' });
+  try {
+    const { token } = await AdminService.login(req.body);
+    res.status(200).json({ token });
 
-        const match = await bcrypt.compare(password, admin.password);
-        if (!match) return res.status(401).json({ message: 'Invalid credentials' });
-
-        const token = jwt.sign(
-            { id: admin.id, username: admin.username },
-            process.env.JWT_SECRET,
-            { expiresIn: '1h' }
-        );
-
-        res.status(200).json({ token });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: err.message });
-    }
+  } catch (err) {
+    console.error(err);
+    res.status(err.status || 500).json({
+      message: err.message || 'Login failed'
+    });
+  }
 };

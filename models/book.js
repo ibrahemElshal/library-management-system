@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database.js');
-
 const Book = sequelize.define('Book', {
     id: {
         type: DataTypes.INTEGER,
@@ -26,10 +25,18 @@ const Book = sequelize.define('Book', {
     },
     shelf_location: {
         type: DataTypes.STRING
+    },
+
+    version: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0 // Start at version 0
     }
 }, {
+    version: 'version',
     tableName: 'books',
-    timestamps: true
+    timestamps: true,
+
 });
 
 module.exports = Book;

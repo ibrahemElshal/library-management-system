@@ -2,7 +2,6 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database.js');
 const Book = require('./book.js');
 const Borrower = require('./borrower.js');
-const { version } = require('yargs');
 
 const Borrow = sequelize.define('Borrow', {
     id: {
@@ -37,16 +36,10 @@ const Borrow = sequelize.define('Borrow', {
             key: 'id'
         },
         allowNull: false
-    },
-    version: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0 // Start at version 0
-      }
+    }
 }, {
     tableName: 'borrows',
     timestamps: true,
-    version:'version'
 }
 
 );

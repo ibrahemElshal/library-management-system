@@ -219,6 +219,10 @@ Authorization: Bearer <your_token>
 #### Admin Endpoints
 - `POST /api/admin/add` - Create a new admin
 - `POST /api/admin/login` - Admin login (returns JWT token)
+- `GET /api/admin/analytics/export/csv?startDate=<date>&endDate=<date>` - Export borrow analytics as CSV (Admin auth required)
+- `GET /api/admin/analytics/export/xlsx?startDate=<date>&endDate=<date>` - Export borrow data as Excel (Admin auth required)
+- `GET /api/admin/analytics/overdue/last-month` - Export overdue books from last month (Admin auth required)
+- `GET /api/admin/analytics/borrows/last-month` - Export all borrows from last month (Admin auth required)
 
 #### Book Endpoints
 - `POST /api/books` - Create a book (Admin auth required)
@@ -240,11 +244,6 @@ Authorization: Bearer <your_token>
 - `GET /api/borrows/borrowed/:borrower_id` - Get borrowed books for a borrower (Admin auth required)
 - `GET /api/borrows/overdue` - Get all overdue books (Admin auth required)
 
-#### Analytics Endpoints
-- `GET /api/analytics/export/csv?startDate=<date>&endDate=<date>` - Export borrow analytics as CSV (Admin auth required)
-- `GET /api/analytics/export/xlsx?startDate=<date>&endDate=<date>` - Export borrow data as Excel (Admin auth required)
-- `GET /api/analytics/overdue/last-month` - Export overdue books from last month (Admin auth required)
-- `GET /api/analytics/borrows/last-month` - Export all borrows from last month (Admin auth required)
 
 ### Postman Collection
 A complete Postman collection is available: `Library_Management_System.postman_collection.json`
@@ -276,8 +275,8 @@ library-management-system/
 │   ├── borrow.js            # Borrow model
 │   └── borrower.js          # Borrower model
 ├── routes/
-│   ├── adminRoutes.js       # Admin routes
-│   ├── analyticsRoutes.js   # Analytics routes
+│   ├── index.js             # Centralized route configuration
+│   ├── adminRoutes.js       # Admin routes (includes analytics)
 │   ├── booksRoutes.js       # Book routes
 │   ├── borrowersRoutes.js   # Borrower routes
 │   └── borrowRoutes.js      # Borrow routes
@@ -369,6 +368,13 @@ curl -X POST http://localhost:5001/api/borrows/checkout \
 ### 6. Get All Books with Pagination
 ```bash
 curl "http://localhost:5001/api/books?page=1&limit=10"
+```
+
+### 7. Export Borrow Analytics (CSV)
+```bash
+curl "http://localhost:5001/api/admin/analytics/export/csv?startDate=2024-01-01T00:00:00.000Z&endDate=2024-12-31T23:59:59.999Z" \
+  -H "Authorization: Bearer <admin_token>" \
+  -o borrow_analytics.csv
 ```
 
 ## 🔒 Security Features

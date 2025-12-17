@@ -3,23 +3,15 @@ const bodyParser = require('body-parser');
 require('dotenv').config();
 
 const { initRedis } = require('./config/redis');
-const bookRoutes = require('./routes/booksRoutes');
-const borrowerRoutes = require('./routes/borrowersRoutes');
-const borrowRoutes = require('./routes/borrowRoutes');
-const analyticsRoutes = require('./routes/analyticsRoutes');
-const adminRoutes = require('./routes/adminRoutes');
+const routes = require('./routes');
 
 
 const app = express();
 app.use(bodyParser.json());
 initRedis();
 
-
-app.use('/api/admin', adminRoutes); 
-app.use('/api/books', bookRoutes);
-app.use('/api/borrowers', borrowerRoutes);
-app.use('/api/borrows', borrowRoutes);
-app.use('/api/analytics', analyticsRoutes);
+// Mount all routes under /api prefix
+app.use('/api', routes);
 
 
 app.use((err, req, res, next) => {

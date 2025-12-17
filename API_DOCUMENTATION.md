@@ -12,7 +12,6 @@ Complete API documentation with setup instructions, endpoint details, request/re
    - [Book Endpoints](#book-endpoints)
    - [Borrower Endpoints](#borrower-endpoints)
    - [Borrow Endpoints](#borrow-endpoints)
-   - [Analytics Endpoints](#analytics-endpoints)
 5. [Error Handling](#error-handling)
 6. [Status Codes](#status-codes)
 
@@ -222,9 +221,146 @@ curl -X POST http://localhost:5001/api/admin/login \
 
 ---
 
+#### 3. Export Borrow Analytics CSV
+
+Export borrow analytics data as CSV file.
+
+**Endpoint:** `GET /api/admin/analytics/export/csv`
+
+**Authentication:** Required (Admin)
+
+**Query Parameters:**
+- `startDate` (required): Start date in ISO 8601 format
+- `endDate` (required): End date in ISO 8601 format
+
+**Headers:**
+```
+Authorization: Bearer <admin_token>
+```
+
+**Request Example:**
+```bash
+curl "http://localhost:5001/api/admin/analytics/export/csv?startDate=2024-01-01T00:00:00.000Z&endDate=2024-12-31T23:59:59.999Z" \
+  -H "Authorization: Bearer <admin_token>" \
+  -o borrow_analytics.csv
+```
+
+**Success Response (200):**
+- Content-Type: `text/csv`
+- File download with analytics data including:
+  - Book title
+  - ISBN
+  - Total borrows
+  - Average borrow days
+
+**Error Response (400):**
+```json
+{
+  "errors": [
+    {
+      "msg": "startDate is required",
+      "param": "startDate",
+      "location": "query"
+    }
+  ]
+}
+```
+
+---
+
+#### 4. Export Borrow Data XLSX
+
+Export borrow data as Excel file.
+
+**Endpoint:** `GET /api/admin/analytics/export/xlsx`
+
+**Authentication:** Required (Admin)
+
+**Query Parameters:**
+- `startDate` (required): Start date in ISO 8601 format
+- `endDate` (required): End date in ISO 8601 format
+
+**Headers:**
+```
+Authorization: Bearer <admin_token>
+```
+
+**Request Example:**
+```bash
+curl "http://localhost:5001/api/admin/analytics/export/xlsx?startDate=2024-01-01T00:00:00.000Z&endDate=2024-12-31T23:59:59.999Z" \
+  -H "Authorization: Bearer <admin_token>" \
+  -o borrows.xlsx
+```
+
+**Success Response (200):**
+- Content-Type: `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`
+- Excel file with columns:
+  - Borrow ID
+  - Borrower Name
+  - Borrower Email
+  - Book Title
+  - Book ISBN
+  - Borrow Date
+  - Due Date
+  - Return Date
+
+---
+
+#### 5. Export Overdue Last Month
+
+Export overdue books from last month as CSV.
+
+**Endpoint:** `GET /api/admin/analytics/overdue/last-month`
+
+**Authentication:** Required (Admin)
+
+**Headers:**
+```
+Authorization: Bearer <admin_token>
+```
+
+**Request Example:**
+```bash
+curl "http://localhost:5001/api/admin/analytics/overdue/last-month" \
+  -H "Authorization: Bearer <admin_token>" \
+  -o overdue_last_month.csv
+```
+
+**Success Response (200):**
+- Content-Type: `text/csv`
+- CSV file with overdue books data
+
+---
+
+#### 6. Export Borrows Last Month
+
+Export all borrows from last month as CSV.
+
+**Endpoint:** `GET /api/admin/analytics/borrows/last-month`
+
+**Authentication:** Required (Admin)
+
+**Headers:**
+```
+Authorization: Bearer <admin_token>
+```
+
+**Request Example:**
+```bash
+curl "http://localhost:5001/api/admin/analytics/borrows/last-month" \
+  -H "Authorization: Bearer <admin_token>" \
+  -o borrows_last_month.csv
+```
+
+**Success Response (200):**
+- Content-Type: `text/csv`
+- CSV file with all borrows from last month
+
+---
+
 ### Book Endpoints
 
-#### 3. Create Book
+#### 7. Create Book
 
 Create a new book in the library.
 
@@ -306,7 +442,7 @@ curl -X POST http://localhost:5001/api/books \
 
 ---
 
-#### 4. Get All Books
+#### 8. Get All Books
 
 Retrieve all books with pagination.
 
@@ -346,7 +482,7 @@ curl "http://localhost:5001/api/books?page=1&limit=10"
 
 ---
 
-#### 5. Search Books
+#### 9. Search Books
 
 Search books by title, author, or ISBN.
 
@@ -381,13 +517,19 @@ curl "http://localhost:5001/api/books/search?query=Clean"
 **Error Response (400):**
 ```json
 {
-  "message": "Query is required"
+  "errors": [
+    {
+      "msg": "Search query is required",
+      "param": "query",
+      "location": "query"
+    }
+  ]
 }
 ```
 
 ---
 
-#### 6. Update Book
+#### 10. Update Book
 
 Update an existing book.
 
@@ -448,7 +590,7 @@ curl -X PUT http://localhost:5001/api/books/1 \
 
 ---
 
-#### 7. Delete Book
+#### 11. Delete Book
 
 Delete a book from the library.
 
@@ -488,7 +630,7 @@ curl -X DELETE http://localhost:5001/api/books/1 \
 
 ### Borrower Endpoints
 
-#### 8. Register Borrower
+#### 12. Register Borrower
 
 Register a new borrower.
 
@@ -548,7 +690,7 @@ curl -X POST http://localhost:5001/api/borrowers/register \
 
 ---
 
-#### 9. Borrower Login
+#### 13. Borrower Login
 
 Login as borrower and receive JWT token.
 
@@ -590,7 +732,7 @@ curl -X POST http://localhost:5001/api/borrowers/login \
 
 ---
 
-#### 10. Get All Borrowers
+#### 14. Get All Borrowers
 
 Retrieve all borrowers with pagination.
 
@@ -633,7 +775,7 @@ curl "http://localhost:5001/api/borrowers?page=1&limit=10" \
 
 ---
 
-#### 11. Update Borrower
+#### 15. Update Borrower
 
 Update borrower information.
 
@@ -685,7 +827,7 @@ curl -X PUT http://localhost:5001/api/borrowers/1 \
 
 ---
 
-#### 12. Delete Borrower
+#### 16. Delete Borrower
 
 Delete a borrower.
 
@@ -725,7 +867,7 @@ curl -X DELETE http://localhost:5001/api/borrowers/1 \
 
 ### Borrow Endpoints
 
-#### 13. Checkout Book
+#### 17. Checkout Book
 
 Checkout (borrow) a book.
 
@@ -788,7 +930,7 @@ curl -X POST http://localhost:5001/api/borrows/checkout \
 
 ---
 
-#### 14. Return Book
+#### 18. Return Book
 
 Return a borrowed book.
 
@@ -842,7 +984,7 @@ curl -X PUT http://localhost:5001/api/borrows/return/1 \
 
 ---
 
-#### 15. Get Borrowed Books by Borrower
+#### 19. Get Borrowed Books by Borrower
 
 Get all currently borrowed books for a specific borrower.
 
@@ -896,7 +1038,7 @@ curl "http://localhost:5001/api/borrows/borrowed/1?page=1&limit=10" \
 
 ---
 
-#### 16. Get Overdue Books
+#### 20. Get Overdue Books
 
 Get all books that are overdue (not returned and past due date).
 
@@ -936,139 +1078,6 @@ curl "http://localhost:5001/api/borrows/overdue" \
   }
 ]
 ```
-
----
-
-### Analytics Endpoints
-
-#### 17. Export Borrow Analytics CSV
-
-Export borrow analytics data as CSV file.
-
-**Endpoint:** `GET /api/analytics/export/csv`
-
-**Authentication:** Required (Admin)
-
-**Query Parameters:**
-- `startDate` (required): Start date in ISO 8601 format
-- `endDate` (required): End date in ISO 8601 format
-
-**Headers:**
-```
-Authorization: Bearer <admin_token>
-```
-
-**Request Example:**
-```bash
-curl "http://localhost:5001/api/analytics/export/csv?startDate=2024-01-01&endDate=2024-12-31" \
-  -H "Authorization: Bearer <admin_token>" \
-  -o borrow_analytics.csv
-```
-
-**Success Response (200):**
-- Content-Type: `text/csv`
-- File download with analytics data including:
-  - Book title
-  - ISBN
-  - Total borrows
-  - Average borrow days
-
-**Error Response (400):**
-```json
-{
-  "message": "startDate and endDate are required"
-}
-```
-
----
-
-#### 18. Export Borrow Data XLSX
-
-Export borrow data as Excel file.
-
-**Endpoint:** `GET /api/analytics/export/xlsx`
-
-**Authentication:** Required (Admin)
-
-**Query Parameters:**
-- `startDate` (required): Start date in ISO 8601 format
-- `endDate` (required): End date in ISO 8601 format
-
-**Headers:**
-```
-Authorization: Bearer <admin_token>
-```
-
-**Request Example:**
-```bash
-curl "http://localhost:5001/api/analytics/export/xlsx?startDate=2024-01-01&endDate=2024-12-31" \
-  -H "Authorization: Bearer <admin_token>" \
-  -o borrows.xlsx
-```
-
-**Success Response (200):**
-- Content-Type: `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`
-- Excel file with columns:
-  - Borrow ID
-  - Borrower Name
-  - Borrower Email
-  - Book Title
-  - Book ISBN
-  - Borrow Date
-  - Due Date
-  - Return Date
-
----
-
-#### 19. Export Overdue Last Month
-
-Export overdue books from last month as CSV.
-
-**Endpoint:** `GET /api/analytics/overdue/last-month`
-
-**Authentication:** Required (Admin)
-
-**Headers:**
-```
-Authorization: Bearer <admin_token>
-```
-
-**Request Example:**
-```bash
-curl "http://localhost:5001/api/analytics/overdue/last-month" \
-  -H "Authorization: Bearer <admin_token>" \
-  -o overdue_last_month.csv
-```
-
-**Success Response (200):**
-- Content-Type: `text/csv`
-- CSV file with overdue books data
-
----
-
-#### 20. Export Borrows Last Month
-
-Export all borrows from last month as CSV.
-
-**Endpoint:** `GET /api/analytics/borrows/last-month`
-
-**Authentication:** Required (Admin)
-
-**Headers:**
-```
-Authorization: Bearer <admin_token>
-```
-
-**Request Example:**
-```bash
-curl "http://localhost:5001/api/analytics/borrows/last-month" \
-  -H "Authorization: Bearer <admin_token>" \
-  -o borrows_last_month.csv
-```
-
-**Success Response (200):**
-- Content-Type: `text/csv`
-- CSV file with all borrows from last month
 
 ---
 

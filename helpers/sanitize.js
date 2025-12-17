@@ -1,3 +1,6 @@
+/**
+ * Sanitize a string by removing potential XSS characters.
+ */
 const sanitizeString = (value) => {
     if (typeof value === 'string') {
         return value.replace(/[<>$;]/g, '');

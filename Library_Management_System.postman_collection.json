@@ -80,6 +80,143 @@
 						},
 						"description": "Login as admin and get JWT token"
 					}
+				},
+				{
+					"name": "Analytics",
+					"item": [
+						{
+							"name": "Export Borrow Data CSV",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{adminToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/admin/analytics/export/csv?startDate=2024-01-01T00:00:00.000Z&endDate=2024-12-31T23:59:59.999Z",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"analytics",
+										"export",
+										"csv"
+									],
+									"query": [
+										{
+											"key": "startDate",
+											"value": "2024-01-01T00:00:00.000Z",
+											"description": "Start date (ISO 8601 format)"
+										},
+										{
+											"key": "endDate",
+											"value": "2024-12-31T23:59:59.999Z",
+											"description": "End date (ISO 8601 format)"
+										}
+									]
+								},
+								"description": "Export borrow analytics data as CSV (requires admin auth)"
+							}
+						},
+						{
+							"name": "Export Borrow Data XLSX",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{adminToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/admin/analytics/export/xlsx?startDate=2024-01-01T00:00:00.000Z&endDate=2024-12-31T23:59:59.999Z",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"analytics",
+										"export",
+										"xlsx"
+									],
+									"query": [
+										{
+											"key": "startDate",
+											"value": "2024-01-01T00:00:00.000Z",
+											"description": "Start date (ISO 8601 format)"
+										},
+										{
+											"key": "endDate",
+											"value": "2024-12-31T23:59:59.999Z",
+											"description": "End date (ISO 8601 format)"
+										}
+									]
+								},
+								"description": "Export borrow data as Excel file (requires admin auth)"
+							}
+						},
+						{
+							"name": "Export Overdue Last Month",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{adminToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/admin/analytics/overdue/last-month",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"analytics",
+										"overdue",
+										"last-month"
+									]
+								},
+								"description": "Export overdue books from last month as CSV (requires admin auth)"
+							}
+						},
+						{
+							"name": "Export Borrows Last Month",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{adminToken}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/admin/analytics/borrows/last-month",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"admin",
+										"analytics",
+										"borrows",
+										"last-month"
+									]
+								},
+								"description": "Export all borrows from last month as CSV (requires admin auth)"
+							}
+						}
+					]
 				}
 			]
 		},
@@ -439,6 +576,11 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{borrowerToken}}",
+								"type": "text"
 							}
 						],
 						"body": {
@@ -456,7 +598,7 @@
 								"checkout"
 							]
 						},
-						"description": "Checkout a book (borrow a book)"
+						"description": "Checkout a book (borrow a book) - requires borrower authentication"
 					}
 				},
 				{
@@ -560,139 +702,6 @@
 							]
 						},
 						"description": "Get all overdue books (requires admin auth)"
-					}
-				}
-			]
-		},
-		{
-			"name": "Analytics",
-			"item": [
-				{
-					"name": "Export Borrow Data CSV",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{adminToken}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/api/analytics/export/csv?startDate=2024-01-01T00:00:00.000Z&endDate=2024-12-31T23:59:59.999Z",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"analytics",
-								"export",
-								"csv"
-							],
-							"query": [
-								{
-									"key": "startDate",
-									"value": "2024-01-01T00:00:00.000Z",
-									"description": "Start date (ISO 8601 format)"
-								},
-								{
-									"key": "endDate",
-									"value": "2024-12-31T23:59:59.999Z",
-									"description": "End date (ISO 8601 format)"
-								}
-							]
-						},
-						"description": "Export borrow analytics data as CSV (requires admin auth)"
-					}
-				},
-				{
-					"name": "Export Borrow Data XLSX",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{adminToken}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/api/analytics/export/xlsx?startDate=2024-01-01T00:00:00.000Z&endDate=2024-12-31T23:59:59.999Z",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"analytics",
-								"export",
-								"xlsx"
-							],
-							"query": [
-								{
-									"key": "startDate",
-									"value": "2024-01-01T00:00:00.000Z",
-									"description": "Start date (ISO 8601 format)"
-								},
-								{
-									"key": "endDate",
-									"value": "2024-12-31T23:59:59.999Z",
-									"description": "End date (ISO 8601 format)"
-								}
-							]
-						},
-						"description": "Export borrow data as Excel file (requires admin auth)"
-					}
-				},
-				{
-					"name": "Export Overdue Last Month",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{adminToken}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/api/analytics/overdue/last-month",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"analytics",
-								"overdue",
-								"last-month"
-							]
-						},
-						"description": "Export overdue books from last month as CSV (requires admin auth)"
-					}
-				},
-				{
-					"name": "Export Borrows Last Month",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "Bearer {{adminToken}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/api/analytics/borrows/last-month",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"analytics",
-								"borrows",
-								"last-month"
-							]
-						},
-						"description": "Export all borrows from last month as CSV (requires admin auth)"
 					}
 				}
 			]

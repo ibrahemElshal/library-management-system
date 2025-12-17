@@ -1,5 +1,9 @@
 const redisClient = require('../config/redis');
 
+/**
+ * Rate limiting middleware using Redis.
+ * Limits the number of requests from an IP address within a specified time window.
+ */
 const rateLimiter = (keyPrefix, limit = 10, windowSeconds = 60) => {
     return async (req, res, next) => {
         const key = `${keyPrefix}:${req.ip}`;
